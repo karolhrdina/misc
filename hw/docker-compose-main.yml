@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:9.6
+    environment:
+      - POSTGRES_PASSWORD=${PG_PASS}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./services/port-domain/sql/:/docker-entrypoint-initdb.d/
+      - db_data_hw:/var/lib/postgresql/data
+    networks:
+      - proxynet
+
+  client-api:
+    image: client-api:latest
+    environment:
+      - PORTDOMAIN_GRPC_ADDR=port-domain:9082
+    ports:
+      - '8086:8086'
+    networks:
+      - proxynet
+
+  port-domain:
+    image: port-domain:latest
+    env_file: .env
+    depends_on:
+      - postgres
+    networks:
+      - proxynet
+
+volumes:
+  db_data_hw:
+
+networks:
+  proxynet:
+    name: hw-test

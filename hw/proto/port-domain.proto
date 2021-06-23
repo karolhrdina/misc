@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package portdomain;
+
+option go_package = "github.com/karolhrdina/misc/hw/pb.go;pb_go";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+// Note:
+// Based on provided .json example file
+// * none of the port properties are guaranteed to be filled in (present) and we have to take that
+//   into account => therefore the message's fields are wrappers, so that in case of update/snapshot,
+//   we know whether the value is being changed or not
+// * I selected key of root level properties as unique port identifier. There's also `unlocs` property,
+//   that has the same value as far as the sample file goes, but we can not count on that since it's an array,
+//   we have to consider that some ports might have more unlocs codes
+message Port {
+    string id = 1;
+    google.protobuf.StringValue name = 2;
+    google.protobuf.StringValue city = 3;
+    google.protobuf.StringValue country = 4;
+    google.protobuf.StringValue province = 5;
+    google.protobuf.StringValue timezone = 6;
+    google.protobuf.StringValue code = 7;
+    RepeatedString alias = 8;
+    RepeatedString regions = 9;
+    Coordinates coordinates = 10;
+    RepeatedString unlocs = 11;
+}
+
+// wrapper for array of strings
+message RepeatedString {
+    repeated string value = 1;
+}
+
+// wrapper for Coordinates
+message Coordinates {
+    float x = 1;
+    float y = 2;
+}
+
+service Portdomain {
+    rpc Snapshot (Port) returns (google.protobuf.Empty);
+    rpc List(google.protobuf.Empty) returns (stream Port);
+}
+
+

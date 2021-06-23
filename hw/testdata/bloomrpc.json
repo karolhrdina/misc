@@ -1,0 +1,38 @@
+{
+  "id": "PRTSLANY2",
+  "name": {
+    "value": "Port-Slany"
+  },
+  "city": {
+    "value": "Slany"
+  },
+  "country": {
+    "value": "CR"
+  },
+  "province": {
+    "value": "Stredocesky"
+  },
+  "timezone": {
+    "value": "GMT+1"
+  },
+  "code": {
+    "value": "27401"
+  },
+  "alias": {
+    "value": [
+      "Brloh", "Doupe"
+    ]
+  },
+  "regions": {
+    "value": []
+  },
+  "coordinates": {
+    "x": 1.1,
+    "y": 1.1
+  },
+  "unlocs": {
+    "value": [
+      "PRTSLANY"
+    ]
+  }
+}
