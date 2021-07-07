@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/karolhrdina/misc/hw/pkg/env"
+	"github.com/karolhrdina/misc/hw/services/port-domain/service"
 
 	"github.com/pkg/errors"
 )
@@ -24,7 +25,7 @@ func main() {
 }
 
 func runGRPC() error {
-	service, err := initializeService()
+	service, err := service.InitializeService()
 	if err != nil {
 		return errors.Wrap(err, "unable to initialize service")
 	}

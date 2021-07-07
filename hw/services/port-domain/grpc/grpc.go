@@ -1,9 +1,10 @@
-package main
+package grpc
 
 import (
 	"context"
 	"strings"
 
+	"github.com/karolhrdina/misc/hw/model/ports"
 	pb "github.com/karolhrdina/misc/hw/pb.go"
 
 	"google.golang.org/grpc/codes"
@@ -11,26 +12,19 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// PortStorer is the interface that wraps persistence of ports,
-// i.e. storing and listing of stored ports.
-//
-// Store must either persist new port or update an existing one if port
-// with given `Id` already exists.
-// Store must not modify `port`.
-//
-// List must return all stored ports.
-type PortStorer interface {
-	Store(ctx context.Context, port *pb.Port) error
-	List(ctx context.Context) ([]*pb.Port, error)
-}
-
-// portGrpcServer implements gRPC `Portdomain` service
-type portGrpcServer struct {
+// PortGrpcServer implements gRPC `Portdomain` service
+type Server struct {
 	pb.UnimplementedPortdomainServer
-	store PortStorer
+	storer ports.Storer
 }
 
-func (s *portGrpcServer) Snapshot(ctx context.Context, in *pb.Port) (*emptypb.Empty, error) {
+func New(storer ports.Storer) *Server {
+	return &Server{
+		storer: storer,
+	}
+}
+
+func (s *Server) Snapshot(ctx context.Context, in *pb.Port) (*emptypb.Empty, error) {
 	// input checks
 	switch {
 	case strings.TrimSpace(in.Id) == "":
@@ -38,7 +32,7 @@ func (s *portGrpcServer) Snapshot(ctx context.Context, in *pb.Port) (*emptypb.Em
 		return &emptypb.Empty{}, status.Error(codes.InvalidArgument, "Message field 'id' must not be empty.")
 	}
 
-	err := s.store.Store(ctx, in)
+	err := s.storer.Store(ctx, in)
 	if err != nil {
 		return &emptypb.Empty{}, status.Errorf(codes.Internal, "Storing message failed: %s", err.Error())
 	}
@@ -46,11 +40,11 @@ func (s *portGrpcServer) Snapshot(ctx context.Context, in *pb.Port) (*emptypb.Em
 	return &emptypb.Empty{}, nil
 }
 
-func (s *portGrpcServer) List(in *emptypb.Empty, stream pb.Portdomain_ListServer) error {
+func (s *Server) List(in *emptypb.Empty, stream pb.Portdomain_ListServer) error {
 
 	ctx := stream.Context()
 
-	ports, err := s.store.List(ctx)
+	ports, err := s.storer.List(ctx)
 	if err != nil {
 		return status.Errorf(codes.Internal, "Storing message failed: %s", err.Error())
 	}

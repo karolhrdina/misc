@@ -12,7 +12,7 @@ GIT_ROOT=$(git rev-parse --show-toplevel)
 
 # Note:
 # This is wrong! Never do this in production, but for homework it's ok.
-SQL_DIR=${GIT_ROOT}/services/port-domain/sql
+SQL_DIR=${GIT_ROOT}/hw/services/port-domain/sql
 echo "${SQL_DIR}"
 
 docker run \

@@ -1,21 +1,32 @@
-package main
+package service
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
+	"github.com/karolhrdina/misc/hw/model/ports"
+	"github.com/karolhrdina/misc/hw/services/client-api/handlers"
 )
 
 // Service is a container to hold all dependencies of client-api app.
 type Service struct {
-	portsImport *v1Ports
+	portsHandlers *handlers.PortsV1
+	storer        ports.Storer
+}
+
+// InitializeServices provides new Service injected with dependencies
+func InitializeService() (*Service, error) {
+	return initializeService()
 }
 
 // NewService instantiates Service struct.
 func NewService(
-	portsImport *v1Ports) *Service {
+	portsHandlers *handlers.PortsV1,
+	storer ports.Storer) *Service {
 	return &Service{
-		portsImport: portsImport,
+		portsHandlers: portsHandlers,
+		storer:        storer,
 	}
 }
 
@@ -30,8 +41,8 @@ func (c *Service) Handler() http.Handler {
 
 	apiRouter := mux.NewRouter().StrictSlash(true)
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
-	v1Router.Methods(http.MethodPost).Path("/ports/import").HandlerFunc(c.portsImport.handleImport())
-	v1Router.Methods(http.MethodGet).Path("/ports").HandlerFunc(c.portsImport.handleList())
+	v1Router.Methods(http.MethodPost).Path("/ports/import").HandlerFunc(c.portsHandlers.HandleImport(c.storer))
+	v1Router.Methods(http.MethodGet).Path("/ports").HandlerFunc(c.portsHandlers.HandleList(c.storer))
 
 	return apiRouter
 }

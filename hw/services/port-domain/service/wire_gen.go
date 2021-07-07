@@ -3,10 +3,13 @@
 //go:generate wire
 //+build !wireinject
 
-package main
+package service
 
 import (
+	"database/sql"
+	"github.com/karolhrdina/misc/hw/model/ports"
 	"github.com/karolhrdina/misc/hw/pkg/db"
+	"github.com/karolhrdina/misc/hw/pkg/storer"
 )
 
 // Injectors from initialize.go:
@@ -16,6 +19,13 @@ func initializeService() (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	service := NewService(sqlDB)
+	storer := provideStorer(sqlDB)
+	service := NewService(sqlDB, storer)
 	return service, nil
+}
+
+// initialize.go:
+
+func provideStorer(db2 *sql.DB) ports.Storer {
+	return storer.NewPostgresStorer(db2)
 }

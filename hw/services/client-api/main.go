@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/karolhrdina/misc/hw/pkg/env"
+	"github.com/karolhrdina/misc/hw/services/client-api/service"
 
 	"github.com/braintree/manners"
 	"github.com/pkg/errors"
@@ -26,7 +27,7 @@ func main() {
 }
 
 func runHTTP() error {
-	service, err := initializeService()
+	service, err := service.InitializeService()
 	if err != nil {
 		return errors.Wrap(err, "unable to initialize service")
 	}

@@ -1,4 +1,4 @@
-package storage
+package storer
 
 import (
 	"context"
@@ -17,19 +17,19 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Storage implements the  port-domain's `PortStorer` interface
-type Storage struct {
+// Storage implements the ports.Storer interface
+type PostgresStorer struct {
 	db boil.ContextExecutor
 }
 
-// New returns initialized *Storage
-func New(db *sql.DB) *Storage {
-	return &Storage{
+// NewPostgresStorer returns initialized *Storage
+func NewPostgresStorer(db *sql.DB) *PostgresStorer {
+	return &PostgresStorer{
 		db: db,
 	}
 }
 
-func (s *Storage) Store(ctx context.Context, in *pb.Port) error {
+func (s *PostgresStorer) Store(ctx context.Context, in *pb.Port) error {
 	if in == nil {
 		return errors.New("function parameter `port` is nil")
 	}
@@ -43,7 +43,7 @@ func (s *Storage) Store(ctx context.Context, in *pb.Port) error {
 	return nil
 }
 
-func (s *Storage) List(ctx context.Context) ([]*pb.Port, error) {
+func (s *PostgresStorer) List(ctx context.Context) ([]*pb.Port, error) {
 	ports, err := models.Ports().All(ctx, s.db)
 	if err != nil {
 		return nil, errors.Wrapf(err, "loading ports from database failed")
@@ -97,7 +97,6 @@ func convertMessageToModel(in *pb.Port) (models.Port, boil.Columns) {
 	} else {
 		blacklist.Cols = append(blacklist.Cols, models.PortColumns.Code)
 	}
-
 	if in.Alias != nil {
 		port.Alias = types.StringArray(in.Alias.Value)
 	} else {
