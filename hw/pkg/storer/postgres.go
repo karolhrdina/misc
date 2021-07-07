@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	pb "github.com/karolhrdina/misc/hw/pb.go"
-	"github.com/karolhrdina/misc/hw/services/port-domain/models"
+	"github.com/karolhrdina/misc/hw/services/port-domain/sql/models"
 
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
