@@ -1,0 +1,16 @@
+~/.ssh
+~/.bashrc
+~/.bash_profile
+~/.bash_history
+~/.viminfo
+~/.vimrc
+~/.vim
+~/.config
+~/.gnupg
+~/.gitconfig
+~/.profile
+~/.kube
+~/.aws
+~/.mozilla/firefox
+~/Documents
+~/.local
